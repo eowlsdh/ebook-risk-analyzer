@@ -1,0 +1,81 @@
+name: Build Windows Installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    env:
+      PYTHONUTF8: "1"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install test dependencies
+        shell: pwsh
+        run: python -m pip install --upgrade pip; python -m pip install ".[dev]"
+
+      - name: Run complete test suite
+        shell: pwsh
+        run: python -m pytest -q
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --yes --no-progress
+
+      - name: Build portable application and installer
+        shell: pwsh
+        run: .\packaging\build-windows.ps1
+
+      - name: Create portable ZIP
+        shell: pwsh
+        run: |
+          $portable = "dist-portable\EbookRiskAnalyzer-Portable-x64.zip"
+          New-Item -ItemType Directory -Force -Path (Split-Path $portable) | Out-Null
+          Compress-Archive -Path "dist\EbookRiskAnalyzer\*" -DestinationPath $portable -CompressionLevel Optimal
+          if (-not (Test-Path $portable)) { throw "Portable ZIP was not created." }
+
+      - name: Verify release files
+        shell: pwsh
+        run: |
+          $installer = "dist-installer\EbookRiskAnalyzer-Setup-x64.exe"
+          $portable = "dist-portable\EbookRiskAnalyzer-Portable-x64.zip"
+          if (-not (Test-Path $installer)) { throw "Installer is missing: $installer" }
+          if (-not (Test-Path $portable)) { throw "Portable ZIP is missing: $portable" }
+          Get-FileHash $installer -Algorithm SHA256
+          Get-FileHash $portable -Algorithm SHA256
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: EbookRiskAnalyzer-Setup-x64
+          path: dist-installer/EbookRiskAnalyzer-Setup-x64.exe
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload portable Windows ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: EbookRiskAnalyzer-Portable-x64
+          path: dist-portable/EbookRiskAnalyzer-Portable-x64.zip
+          if-no-files-found: error
+          retention-days: 30

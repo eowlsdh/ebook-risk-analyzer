@@ -48,3 +48,18 @@
 4. 서명 인증서·발급자 표시·버전·업그레이드·제거를 확인하고, 릴리스 노트에 실제 산출물 이름과 해시를 기록합니다.
 5. 소스 빌드가 필요한 고객에게는 `README.md`의 Python/wheelhouse 절차를 제공하고, 바이너리가 이미 저장소에 있다는 표현은 사용하지 않습니다.
 6. 실제 `Setup.exe`는 릴리스 전에 Windows에서 반드시 빌드하고, 표준 사용자 설치·실행·제거와 휴대용 실행을 모두 시험합니다. 다른 운영체제에서 만든 파일이나 소스 체크아웃을 설치형 산출물로 배포하지 않습니다.
+
+## GitHub Actions에서 Windows 설치 파일 만들기
+
+저장소의 `.github/workflows/windows-build.yml`은 `main` 브랜치 push, `v*` 태그 push 또는 Actions 화면의 수동 실행으로 Windows 빌드를 수행합니다.
+
+1. GitHub 저장소에서 **Actions**를 엽니다.
+2. **Build Windows Installer**를 선택합니다.
+3. **Run workflow**를 누르고 `main`을 선택합니다.
+4. 작업이 성공하면 실행 상세 화면 아래 **Artifacts**에서 다음 두 항목을 내려받습니다.
+   - `EbookRiskAnalyzer-Setup-x64`: 설치 프로그램 EXE
+   - `EbookRiskAnalyzer-Portable-x64`: 무설치 ZIP
+5. ZIP을 풀어 실제 `.exe` 또는 Portable ZIP을 확인하고 SHA-256 해시를 배포 기록에 남깁니다.
+6. 실제 Windows 사용자에게 전달하기 전에 깨끗한 Windows 환경에서 설치, 실행, 샘플 분석, 앱 종료, 제거를 확인합니다.
+
+Actions Artifact는 30일 동안 보존됩니다. 현재 저장소가 비공개이면 저장소 접근 권한이 있는 사용자만 워크플로와 산출물을 볼 수 있습니다. 워크플로에는 원고, 분석 보고서, `.gjc` 세션, 로컬 경로, API 키 또는 서명 인증서가 포함되지 않습니다. 코드 서명을 추가할 때는 인증서를 저장소 파일로 커밋하지 말고 GitHub Actions Secret과 조직 승인 절차를 사용하십시오.
