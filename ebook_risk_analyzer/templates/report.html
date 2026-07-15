@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}} — 전자책 검토 신호 보고서</title>
+<style>{{CSS}}</style>
+</head>
+<body>
+<main class="container">
+  <header><p class="eyebrow">오프라인 전자책 감사</p><h1>{{TITLE}}</h1><p id="disclaimer">검토 신호는 원문 확인을 돕는 자료이며, 사람의 검토와 제작 이력 확인이 필요합니다.</p></header>
+  <section aria-labelledby="overview-title"><h2 id="overview-title">검토 개요</h2><div id="overview" class="cards"></div></section>
+  <section aria-labelledby="score-title"><h2 id="score-title">범주별 점수</h2><div id="scores" class="score-grid"></div></section>
+  <section aria-labelledby="summary-title"><h2 id="summary-title">신호 요약</h2><div class="summary-grid"><div><h3>심각도</h3><ul id="severity-summary"></ul></div><div><h3>장</h3><ul id="chapter-summary"></ul></div></div></section>
+  <section aria-labelledby="findings-title"><h2 id="findings-title">검토 신호</h2><div class="filters"><label>범주 <select id="category-filter"><option value="">전체</option></select></label><label>심각도 <select id="severity-filter"><option value="">전체</option></select></label><label>검색 <input id="text-filter" type="search" placeholder="본문, 이유, 조치 검색"></label><button id="download-json" type="button">JSON 내려받기</button></div><p id="result-count" aria-live="polite"></p><div id="findings" class="findings"></div></section>
+</main>
+<script id="report-data" type="application/json">{{DATA}}</script>
+<script>{{JS}}</script>
+</body>
+</html>

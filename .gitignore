@@ -1,0 +1,63 @@
+# GJC runtime/session state (contains local paths and session identifiers)
+.gjc/
+
+# Python virtual environments
+.venv/
+.venv-*/
+venv/
+env/
+.wheeltest/
+
+# Python caches and tooling
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Packaging/build outputs
+build/
+dist/
+*.egg-info/
+*.egg
+wheelhouse/
+
+# Analyzer outputs (may contain copyrighted text, metadata, and excerpts)
+reports/
+out/
+output/
+artifacts/
+
+# Local books/manuscripts: never commit source material by default
+books/
+manuscripts/
+private-input/
+*.epub
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.secrets.*
+config/local*.yaml
+config/private*.yaml
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

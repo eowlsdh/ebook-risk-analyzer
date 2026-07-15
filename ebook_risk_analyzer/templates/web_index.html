@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>전자책 검토 신호 분석기</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='web.css') }}">
+</head>
+<body>
+<main class="shell">
+  <header class="masthead">
+    <p class="eyebrow">오프라인 로컬 도구</p>
+    <h1>전자책 검토 신호 분석기</h1>
+    <p class="lede">전자책 파일을 이 컴퓨터에서 분석하고, 사람이 확인할 항목을 정리합니다.</p>
+  </header>
+
+  <section class="notice notice-warning" aria-labelledby="warning-title">
+    <h2 id="warning-title">중요: AI 진단 결과가 아닙니다</h2>
+    <p>이 도구는 원문에서 검토가 필요한 신호를 찾습니다. 저작권, 품질 또는 AI 작성 여부를 판정하지 않으며, 결과는 반드시 사람이 원문과 제작 이력을 확인해 판단해야 합니다.</p>
+  </section>
+
+  {% if error %}<section class="notice notice-error" role="alert" aria-live="assertive"><h2>분석을 시작할 수 없습니다</h2><p>{{ error }}</p></section>{% endif %}
+
+  <form id="analysis-form" class="panel" action="{{ url_for('analyze', cap=cap) }}" method="post" enctype="multipart/form-data" novalidate>
+    <input name="cap" type="hidden" value="{{ cap }}">
+    <h2>분석할 파일 선택</h2>
+    <p id="file-help" class="hint">EPUB 또는 허용된 전자책 원본 파일을 선택하세요. 폴더를 선택하면 내부 파일을 함께 올립니다.</p>
+    <div id="drop-zone" class="drop-zone" tabindex="0" role="button" aria-describedby="file-help file-status" aria-label="파일을 선택하거나 이곳에 놓으세요">
+      <input id="files" name="files" type="file" multiple required accept=".epub,.html,.htm,.xhtml,.txt" aria-describedby="file-help file-status">
+      <span class="drop-icon" aria-hidden="true">↓</span>
+      <strong>파일을 여기로 끌어 놓으세요</strong>
+      <span>또는 파일 선택 창에서 고르세요</span>
+    </div>
+    <div class="file-actions">
+      <button class="button button-secondary" type="button" id="choose-files">파일 선택</button>
+      <button class="button button-secondary" type="button" id="choose-directory">폴더 선택</button>
+      <input id="directory-files" type="file" multiple webkitdirectory directory aria-label="폴더 선택" hidden>
+      <input id="relative-paths" name="relative_paths" type="hidden" value="">
+    </div>
+    <p id="file-status" class="hint" aria-live="polite">아직 선택한 파일이 없습니다.</p>
+
+    <fieldset>
+      <legend>분석 옵션</legend>
+      <div class="form-grid">
+        <label for="language">원문 언어
+          <select id="language" name="language">
+            <option value="auto" selected>자동 감지</option>
+            <option value="ko">한국어</option>
+            <option value="en">English</option>
+          </select>
+        </label>
+        <label for="max-file-size">파일당 최대 크기 (바이트, 선택 사항)
+          <input id="max-file-size" name="max_file_size" type="number" min="1" step="1" inputmode="numeric" placeholder="기본 제한 사용 (최대 52428800)">
+        </label>
+      </div>
+      <label class="check"><input name="verify_links" type="checkbox"> <span>외부 링크도 확인하기</span></label>
+      <p class="hint">기본값은 꺼짐입니다. 켜면 링크 확인을 위해 네트워크 연결이 필요할 수 있습니다.</p>
+    </fieldset>
+    <button id="submit-analysis" class="button button-primary" type="submit">로컬 분석 시작</button>
+    <p id="progress" class="progress" hidden role="status" aria-live="polite">파일을 안전한 임시 작업 공간으로 준비하고 있습니다.</p>
+  </form>
+  <form class="return-link" action="{{ url_for('shutdown', cap=cap) }}" method="post"><input name="cap" type="hidden" value="{{ cap }}"><button class="button button-secondary" type="submit">앱 종료</button></form>
+
+  <section class="panel" aria-labelledby="how-title">
+    <h2 id="how-title">처음 사용하는 분을 위한 3단계</h2>
+    <ol class="steps"><li><strong>파일 선택</strong><span>EPUB 파일 또는 전자책 원본이 담긴 폴더를 고릅니다.</span></li><li><strong>옵션 확인</strong><span>언어를 선택하고 필요할 때만 링크 확인을 켭니다.</span></li><li><strong>결과 검토</strong><span>신호별 원문, 이유, 권장 조치를 보고 보고서를 내려받습니다.</span></li></ol>
+  </section>
+
+  <section class="notice notice-private" aria-labelledby="privacy-title">
+    <h2 id="privacy-title">개인정보 및 오프라인 안내</h2>
+    <p>분석은 이 컴퓨터의 로컬 앱에서 실행됩니다. 링크 확인을 선택하지 않으면 인터넷에 연결하지 않습니다. 업로드한 파일은 분석을 위한 개인 임시 작업 공간에서만 처리됩니다.</p>
+  </section>
+</main>
+<script src="{{ url_for('static', filename='web.js') }}" defer></script>
+</body>
+</html>

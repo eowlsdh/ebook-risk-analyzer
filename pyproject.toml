@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ebook-risk-analyzer"
+version = "0.1.0"
+description = "Offline-first EPUB and HTML human-review risk-signal analyzer"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "ebook-risk-analyzer contributors" }]
+dependencies = [
+  "beautifulsoup4>=4.12",
+  "Flask>=3.0",
+  "lxml>=5.0",
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "PyInstaller>=6.0",
+  "pytest>=8.0",
+]
+
+[project.scripts]
+ebook-risk-analyzer = "ebook_risk_analyzer.cli:main"
+ebook-risk-analyzer-web = "ebook_risk_analyzer.web_app:main"
+
+[tool.setuptools.packages.find]
+include = ["ebook_risk_analyzer*"]
+[tool.setuptools.package-data]
+ebook_risk_analyzer = ["templates/*.html", "static/*.css", "static/*.js"]
+
+[tool.setuptools.data-files]
+"share/ebook-risk-analyzer/config" = ["config/default_rules.yaml"]

@@ -1,0 +1,42 @@
+# Default rules are review signals only; they do not determine an author's identity.
+chatbot_residue:
+  enabled: true
+  phrases:
+    - "as an AI language model"
+    - "I cannot fulfill that request"
+    - "I don't have personal opinions"
+    - "as a language model"
+    - "AI 언어 모델로서"
+    - "요청을 수행할 수 없습니다"
+    - "개인적인 의견은 없습니다"
+thresholds:
+  category_score_points: 10.0
+weights:
+  severity:
+    low: 1.0
+    medium: 2.0
+    high: 4.0
+  category:
+    chatbot_residue: 0.18
+    repetition: 0.14
+    style_patterns: 0.10
+    structure: 0.12
+    citations: 0.12
+    consistency: 0.12
+    images: 0.12
+    metadata: 0.10
+exclusions:
+  files: []
+  file_globs:
+    - "*.css"
+    - "*.js"
+  phrases: []
+  headings: []
+links:
+  enabled: false
+  timeout_seconds: 5
+  max_links: 100
+scoring:
+  maximum_score: 100.0
+  category_score_cap: 100.0
+  disclaimer: "이 점수만으로 작성 주체를 확정할 수 없음. 사람의 원문 검토와 제작 이력 확인이 필요함."
