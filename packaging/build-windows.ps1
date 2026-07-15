@@ -91,8 +91,8 @@ try {
                 '/VERYSILENT',
                 '/SUPPRESSMSGBOXES',
                 '/NORESTART',
-                "/DIR=$SmokeInstallPath",
-                "/LOG=$InstallLog"
+                "/DIR=`"$SmokeInstallPath`"",
+                "/LOG=`"$InstallLog`""
             ) -Wait -PassThru
             if ($InstallProcess.ExitCode -ne 0) {
                 if (Test-Path -LiteralPath $InstallLog) {
