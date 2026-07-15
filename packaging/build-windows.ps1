@@ -94,7 +94,14 @@ try {
                 "/DIR=$SmokeInstallPath",
                 "/LOG=$InstallLog"
             ) -Wait -PassThru
-            if ($InstallProcess.ExitCode -ne 0) { Fail "Installer health smoke exited with $($InstallProcess.ExitCode)." }
+            if ($InstallProcess.ExitCode -ne 0) {
+                if (Test-Path -LiteralPath $InstallLog) {
+                    Write-Host '----- Inno Setup smoke log -----'
+                    Get-Content -LiteralPath $InstallLog
+                    Write-Host '----- End Inno Setup smoke log -----'
+                }
+                Fail "Installer health smoke exited with $($InstallProcess.ExitCode)."
+            }
             $InstalledCli = Join-Path $SmokeInstallPath 'EbookRiskAnalyzerCLI.exe'
             Require-Paths @($InstalledCli) 'Installed CLI'
             Invoke-HealthSmoke $InstalledCli 'Installed CLI'
