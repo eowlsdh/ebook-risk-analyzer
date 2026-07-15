@@ -85,19 +85,37 @@ try {
         Require-Paths @($Installer) 'Inno Setup output'
 
         $SmokeInstallPath = Join-Path ([System.IO.Path]::GetTempPath()) ("EbookRiskAnalyzer-smoke-" + [guid]::NewGuid())
+        $InstallLog = Join-Path ([System.IO.Path]::GetTempPath()) ("EbookRiskAnalyzer-install-" + [guid]::NewGuid() + ".log")
         try {
-            & $Installer '/VERYSILENT' '/SUPPRESSMSGBOXES' '/NORESTART' "/DIR=$SmokeInstallPath"
-            if ($LASTEXITCODE -ne 0) { Fail 'Installer health smoke could not install the application.' }
+            $InstallProcess = Start-Process -FilePath $Installer -ArgumentList @(
+                '/VERYSILENT',
+                '/SUPPRESSMSGBOXES',
+                '/NORESTART',
+                "/DIR=$SmokeInstallPath",
+                "/LOG=$InstallLog"
+            ) -Wait -PassThru
+            if ($InstallProcess.ExitCode -ne 0) { Fail "Installer health smoke exited with $($InstallProcess.ExitCode)." }
             $InstalledCli = Join-Path $SmokeInstallPath 'EbookRiskAnalyzerCLI.exe'
+            Require-Paths @($InstalledCli) 'Installed CLI'
             Invoke-HealthSmoke $InstalledCli 'Installed CLI'
         }
         finally {
             $Uninstaller = Join-Path $SmokeInstallPath 'unins000.exe'
             if (Test-Path -LiteralPath $Uninstaller) {
-                & $Uninstaller '/VERYSILENT' '/SUPPRESSMSGBOXES' '/NORESTART'
+                $UninstallProcess = Start-Process -FilePath $Uninstaller -ArgumentList @(
+                    '/VERYSILENT',
+                    '/SUPPRESSMSGBOXES',
+                    '/NORESTART'
+                ) -Wait -PassThru
+                if ($UninstallProcess.ExitCode -ne 0) {
+                    Write-Warning "Smoke uninstall exited with $($UninstallProcess.ExitCode)."
+                }
             }
             if (Test-Path -LiteralPath $SmokeInstallPath) {
                 Remove-Item -Recurse -Force $SmokeInstallPath
+            }
+            if (Test-Path -LiteralPath $InstallLog) {
+                Remove-Item -Force $InstallLog
             }
         }
     }
