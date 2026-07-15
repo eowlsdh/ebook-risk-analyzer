@@ -10,7 +10,7 @@ PACKAGE = ROOT / "ebook_risk_analyzer"
 
 
 a = Analysis(
-    [str(PACKAGE / "__main__.py")],
+    [str(ROOT / "packaging" / "windows_entry.py")],
     pathex=[str(ROOT)],
     binaries=[],
     datas=[
